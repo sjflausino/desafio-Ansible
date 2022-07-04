@@ -1,0 +1,40 @@
+---
+- hosts: vagrantVm
+  tasks:
+
+    - name:  Atualiza dependencias
+      shell: "apt-get update"
+      become: yes
+
+    - name: 'Instala o Docker'
+      apt:
+        name: docker
+        state: latest
+      become: yes
+
+    - name: 'Instala o Docker.io'
+      apt:
+        name: docker.io
+        state: latest
+      become: yes
+
+    - name: 'Instala o Docker-compose'
+      shell: "apt install docker-compose -y"
+      become: yes
+
+    - name:  Clonando repositorio
+      shell: "git clone https://github.com/sjflausino/desafio-Docker.git"
+
+    - name:  Buidando imagem front
+      shell: "cd /home/vagrant/desafio-Docker/front && docker build -t front/app-node:latest ."
+      become: yes
+
+    - name:  Buidando imagem back
+      shell: "cd /home/vagrant/desafio-Docker/back && docker build -t back/app-node:latest ."
+      become: yes
+
+    - name: 'Fazendo o Build do Docker Compose e rodando a aplicação'
+      shell: 'docker-compose build && docker-compose up -d'
+      args:
+        chdir: /home/vagrant/desafio-Docker
+      become: yes
